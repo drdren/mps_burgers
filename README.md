@@ -3,6 +3,18 @@ Matrix product state and operator-accelerated solver of the nonlinear Burgers' e
 
 Please read the Project_description.pdf
 
+___
+Summary of algorithm: 
+
+1) Encode the initial condition as a matrix product state (MPS). Owing to the special structure of the discontinuous initial condition, you are guaranteed that a bond dimension of 2, irrespective of the number of qubits yields maximal accuracy. Also, additional MPS compression will be done by finding correlations across similar length scales. See Gourianov et al., Science Advances, 2025
+2) Discretise the linear Laplacian term with a second-order accurate central finite difference scheme. 
+3) Create the matrix product operator (MPO) representation of the discretise Laplacian scheme using ladder operators, as given by Ripoll, Quantum, 2021; Sato et al., PRR, 2024. Such a scheme is guaranteed to have a bond dimension of 3, suggesting there exists an efficient quantum gate representation. 
+4) Discretise the first derivative associated with the nonlinear convection term with a first-order upwind finite difference scheme.
+5) Create the matrix product operator (MPO) representation of the first-order upwind scheme
+6) Prepare an ancilla registry containing a copy of the amplitude-encoded velocity state vector |v>. Then, apply the MPO of the first-order upwind scheme
+7) Either through mid-circuit measurement of the ancilla registry to postselect the all |0> state or through extra control ancillae, apply a Hadamard product operator to implement the nonlinear term
+8) Implement an approximate Hamiltonian simulation to evolve the velocity forwards in time.
+9) Measure the final velocity state vector. 
 ____
 To run this package, you require a GPU with CUDA 12 and associated drivers installed on your computer. 
 
